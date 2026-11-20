@@ -12,7 +12,7 @@ dados = pd.read_csv(
     comment='#',
     header=None,
     names=["X1", "X2", "label"]
-)
+) 
 
 #grafico de dispersão
 plt.figure(figsize=(10, 6))
