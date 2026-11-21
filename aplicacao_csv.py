@@ -65,9 +65,9 @@ colunas_num = X_df.select_dtypes(include=[np.number]).columns.tolist()
 colunas_cat = ["environment"]
 
 # 3.1 Imputação Numérica (Mediana para resistir aos outliers observados na EDA)
-#imputer_num = SimpleImputer(strategy="median")
+imputer_num = SimpleImputer(strategy="median", add_indicator=True)
 # Alternativa do roteiro (descomente se quiser testar KNN):
-imputer_num = KNNImputer(n_neighbors=5)
+#imputer_num = KNNImputer(n_neighbors=5)
 
 X_treino_num = imputer_num.fit_transform(X_treino_df[colunas_num])
 X_val_num = imputer_num.transform(X_val_df[colunas_num])
@@ -127,14 +127,14 @@ modelo.summary()
 print("\n==== Etapa 7: Treinamento do modelo ====\n")
 
 modelo.compile(
-    optimizer=Adam(learning_rate=0.005),
+    optimizer=Adam(learning_rate=0.002),
     loss="binary_crossentropy",
     metrics=["accuracy"]
 )
 
 early_stopping = EarlyStopping(
     monitor="val_loss",
-    patience=12,
+    patience=20,
     restore_best_weights=True,
     verbose=1
 )
