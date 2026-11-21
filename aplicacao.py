@@ -82,7 +82,7 @@ modelo = keras.Sequential([
     layers.Dense(32, activation='relu', kernel_regularizer=regularizers.l2(0.001)), 
     
     # Camada oculta com ReLU e regularização L2 
-    #layers.Dense(16, activation='relu', kernel_regularizer=regularizers.l2(0.001)), 
+    layers.Dense(16, activation='relu', kernel_regularizer=regularizers.l2(0.001)), 
     
     layers.Dense(15, activation='softmax') # Camada de saída com 15 classes
 
@@ -92,9 +92,6 @@ modelo.summary()
 
 
 print("====Etapa 7: Treinamento do modelo====\n")
-
-TAXA_DE_APRENDIZADO = 0.002
-otimizador_adam= Adam(learning_rate=TAXA_DE_APRENDIZADO)
 
 # Compilação do modelo
 modelo.compile(
@@ -116,8 +113,61 @@ early_stopping = EarlyStopping(
 historico = modelo.fit(
     x_treino_s, y_treino,
     validation_data=(x_val_s, y_val),
-    epochs=250,
+    epochs=70, #ajuste
     batch_size=16,
     callbacks=[early_stopping],
     verbose=1
 )
+
+print("Treinamento concluído\n")
+
+print("====Etapa 8: Gerando Curvas de Aprendizado====\n")
+
+fig, ax = plt.subplots(1, 2, figsize=(14, 5))
+dados_historico = historico.history
+
+
+# Gráfico da perda
+ax[1].plot(dados_historico['loss'], label='Loss - Treino', color='blue', linewidth=2)
+ax[1].plot(dados_historico['val_loss'], label='Loss - Validação', color='orange', linestyle='--', linewidth=2)
+ax[1].set_title('Evolução da Perda (Loss)')
+ax[1].set_xlabel('Épocas')
+ax[1].set_ylabel('Perda')
+ax[1].legend(loc='upper right')
+ax[1].grid(True, linestyle='--', alpha=0.7)
+
+# Gráfico da acuracia (Taxa de Acerto)
+ax[0].plot(dados_historico['accuracy'], label='Acurácia - Treino', color='blue', linewidth=2)
+ax[0].plot(dados_historico['val_accuracy'], label='Acurácia - Validação', color='orange', linestyle='--', linewidth=2)
+ax[0].set_title('Evolução da Acurácia (Convergência)')
+ax[0].set_xlabel('Épocas')
+ax[0].set_ylabel('Acurácia')
+ax[0].legend(loc='lower right')
+ax[0].grid(True, linestyle='--', alpha=0.7)
+
+plt.tight_layout()
+plt.savefig("imagens/curvas_aprendizado.png", dpi=300)
+plt.show()
+
+
+print("\n==== Etapa 9: Avaliação Final no Conjunto de Teste ====\n")
+
+# 1. Previsões no conjunto de teste (nunca visto durante o treino)
+probabilidades = modelo.predict(x_teste_s)
+y_pred = np.argmax(probabilidades, axis=1)
+
+# 2. Relatório completo (Precisão, Recall/Sensibilidade, F1-Score e Acurácia)[cite: 6]
+nomes_classes = [f"Classe {i+1}" for i in range(15)]
+print(classification_report(y_teste, y_pred, target_names=nomes_classes))
+
+# 3. Matriz de Confusão 15x15[cite: 6]
+cm = confusion_matrix(y_teste, y_pred)
+fig, ax = plt.subplots(figsize=(10, 8))
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(1, 16))
+disp.plot(cmap='Blues', ax=ax, colorbar=False)
+plt.title('Matriz de Confusão - Conjunto de Teste (R15)', fontsize=13, fontweight='bold')
+plt.xlabel('Classe Predita')
+plt.ylabel('Classe Real')
+plt.tight_layout()
+plt.savefig("imagens/matriz_confusao.png", dpi=300)
+plt.show()
