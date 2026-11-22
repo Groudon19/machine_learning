@@ -54,7 +54,7 @@ axs[1].set_title("X2 por classe")
 axs[0].legend()
 axs[1].legend()
 
-plt.tight_layout()
+plt.tight_layout() 
 plt.savefig("imagens/histogramas_dados.png", dpi=300)
 plt.show()
 
