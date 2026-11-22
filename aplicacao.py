@@ -12,7 +12,8 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
 
 
-
+tf.random.set_seed(42)
+np.random.seed(42)
 
 dados = pd.read_csv(
     "R15.txt", 

@@ -92,8 +92,8 @@ print("Categorias codificadas:", encoder.categories_[0], "\n")
 # ==========================================
 print("==== Etapa 4: Escalonamento dos dados (StandardScaler) ====\n")
 
-#scaler = StandardScaler()
-scaler = RobustScaler() # Lidar melhor com outliers
+scaler = StandardScaler()
+# scaler = RobustScaler() 
 X_treino_num_s = scaler.fit_transform(X_treino_num)
 X_val_num_s = scaler.transform(X_val_num)
 X_teste_num_s = scaler.transform(X_teste_num)
